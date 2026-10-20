@@ -1050,6 +1050,44 @@ select.field {
   margin-top: 1rem;
 }
 
+.faq-item {
+  border: 1px solid #e7d9cc;
+  border-radius: 1.25rem;
+  background: #fff;
+  padding: 0.15rem 1.25rem;
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 1rem 0;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  flex: none;
+  font-family: Fraunces, serif;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #9c4e24;
+}
+
+.faq-item[open] summary::after {
+  content: "–";
+}
+
+.faq-item p {
+  padding-bottom: 1rem;
+}
+
 .image-preview {
   width: 7.5rem;
   height: 5.2rem;

@@ -1,14 +1,14 @@
 var KineContent = (() => {
   const defaults = {
     seo: {
-      title: "KineDom | Kinesiología a domicilio y telemedicina",
+      title: "Kinesiología a domicilio y telemedicina | KineDom",
       description:
-        "KineDom ofrece kinesiología a domicilio y por telemedicina. Conoce la atención y revisa las horas disponibles.",
+        "Kinesiología a domicilio y por telemedicina en Chile con Erick Barrios. Agenda rehabilitación, dolor y movilidad. Horas en línea en KineDom.",
     },
     hero: {
-      eyebrow: "Kinesiología domiciliaria y telemedicina",
-      title: "Recupera tu movimiento, en casa o en línea",
-      lead: "Atención kinesiológica personalizada, con un plan claro y horarios que puedes revisar desde aquí.",
+      eyebrow: "Erick Barrios, kinesiólogo",
+      title: "Kinesiología a domicilio y telemedicina",
+      lead: "Recupera tu movimiento en casa o en línea, con un plan claro y horarios que puedes revisar desde aquí.",
       ctaHours: "Ver horas disponibles",
       ctaServices: "Mis servicios",
       chip1: "Domicilio",
@@ -30,7 +30,7 @@ var KineContent = (() => {
       image: "",
       eyebrow: "Sobre mí",
       title: "Kinesiología con tiempo y claridad",
-      p1: "Soy kinesiólogo y en KineDom acompaño tu recuperación con sesiones pensadas para tu rutina, tu espacio y tu ritmo.",
+      p1: "Soy Erick Barrios, kinesiólogo, y en KineDom acompaño tu recuperación con sesiones pensadas para tu rutina, tu espacio y tu ritmo.",
       p2: "Puedes atenderte en domicilio o por telemedicina. En ambos casos empezamos con una evaluación, definimos objetivos concretos y ajustamos el plan según cómo respondes.",
       p3: "Entre una sesión y la siguiente sabes qué trabajar, cómo hacerlo y qué señal conviene observar.",
       point1Title: "En tu domicilio",
@@ -93,6 +93,18 @@ var KineContent = (() => {
       hours2: "19:00 · Disponibilidad",
       credit: "Fotografías de Pexels y Unsplash.",
     },
+    faq: {
+      eyebrow: "Ayuda",
+      title: "Preguntas frecuentes",
+      q1: "¿Cómo agendo una hora de kinesiología?",
+      a1: "En Horas disponibles elige un día marcado como disponibilidad, la modalidad de domicilio o telemedicina y una hora libre. Si aún no tienes cuenta, regístrate. La solicitud queda pendiente hasta que el kinesiólogo la confirme o la rechace.",
+      q2: "¿La atención es en mi casa o por telemedicina?",
+      a2: "Puedes elegir las dos. La atención domiciliaria se hace en tu casa. La telemedicina es una videollamada para revisar ejercicios, dolor y avances sin que tengas que trasladarte.",
+      q3: "¿Qué horarios se pueden reservar?",
+      a3: "Cada día publicado puede ofrecer dos horas: 18:00 y 19:00. En el calendario aparecen en amarillo, con la palabra disponibilidad.",
+      q4: "¿Cómo contacto a KineDom?",
+      a4: "Puedes escribir por WhatsApp al +56 9 4130 3571 o al correo erickbarriosarias30@gmail.com.",
+    },
   };
 
   const groups = [
@@ -102,6 +114,22 @@ var KineContent = (() => {
       fields: [
         { key: "seo.title", label: "Título de la pestaña" },
         { key: "seo.description", label: "Descripción", type: "textarea" },
+      ],
+    },
+    {
+      id: "faq",
+      title: "Preguntas frecuentes",
+      fields: [
+        { key: "faq.eyebrow", label: "Etiqueta superior" },
+        { key: "faq.title", label: "Título" },
+        { key: "faq.q1", label: "Pregunta 1" },
+        { key: "faq.a1", label: "Respuesta 1", type: "textarea" },
+        { key: "faq.q2", label: "Pregunta 2" },
+        { key: "faq.a2", label: "Respuesta 2", type: "textarea" },
+        { key: "faq.q3", label: "Pregunta 3" },
+        { key: "faq.a3", label: "Respuesta 3", type: "textarea" },
+        { key: "faq.q4", label: "Pregunta 4" },
+        { key: "faq.a4", label: "Respuesta 4", type: "textarea" },
       ],
     },
     {

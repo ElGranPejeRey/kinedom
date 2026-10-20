@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tukinedom.netlify.app/sitemap.xml
