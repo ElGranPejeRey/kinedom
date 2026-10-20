@@ -542,10 +542,21 @@ var KineDom = (() => {
     return digits === "56900000000" ? "56941303571" : digits || "56941303571";
   }
 
+  function usesWhatsAppApp() {
+    const ua = navigator.userAgent || "";
+    if (/Android|iPhone|iPad|iPod|Mobile/i.test(ua)) return true;
+    return navigator.maxTouchPoints > 1 && /Macintosh/i.test(ua);
+  }
+
   function openWhatsApp(text) {
-    const url = `https://web.whatsapp.com/send?phone=${whatsappNumber()}&text=${encodeURIComponent(text)}`;
+    const phone = whatsappNumber();
+    const encoded = encodeURIComponent(text);
+    if (usesWhatsAppApp()) {
+      window.location.href = `whatsapp://send?phone=${phone}&text=${encoded}`;
+      return { ok: true };
+    }
     const link = document.createElement("a");
-    link.href = url;
+    link.href = `https://web.whatsapp.com/send?phone=${phone}&text=${encoded}`;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
     document.body.append(link);
