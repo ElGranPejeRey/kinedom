@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Mi panel | KineDom</title>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="js/tailwind.js"></script>
+  <script src="js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-cream font-sans text-ink antialiased">
+  <main id="patient-gate" class="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16" hidden>
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Panel</p>
+    <h1 class="mt-3 font-serif text-4xl font-medium">Entra con tu cuenta</h1>
+    <p class="mt-4 text-sm leading-relaxed text-muted">Este panel está disponible para las personas registradas en el sitio.</p>
+    <a href="index.html" class="mt-6 inline-flex w-fit rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white">Volver al sitio</a>
+  </main>
+
+  <div id="patient-app" class="dash-shell" hidden>
+    <aside class="dash-side">
+      <a href="index.html" class="font-serif text-2xl text-cream">Kine<span class="text-clay">Dom</span></a>
+      <p id="patient-welcome" class="mt-3 text-sm leading-relaxed text-cream/80"></p>
+      <nav aria-label="Secciones del panel">
+        <button class="dash-tab is-active" type="button" data-panel="agendar">Agendar hora</button>
+        <button class="dash-tab" type="button" data-panel="informe">Informe kinésico</button>
+      </nav>
+      <div class="dash-side-foot">
+        <a href="index.html">Ver el sitio</a>
+        <button id="patient-logout" type="button">Cerrar sesión</button>
+      </div>
+    </aside>
+    <div class="dash-main">
+      <p id="patient-status" class="dash-status" hidden></p>
+
+      <section id="panel-agendar">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Agenda</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Agendar hora</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Elige el día y la hora disponible. Después pulsa Agendar, completa los datos y envía la solicitud. Queda pendiente hasta que se confirme o se rechace, y se abre WhatsApp con el aviso para el kinesiólogo.</p>
+        <div id="calendar" class="mt-6" data-mode="agenda"></div>
+        <div id="patient-citas" class="mt-10"></div>
+      </section>
+
+      <section id="panel-informe" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Documentos</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Solicitar informe kinésico</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">La solicitud queda aquí con su fecha y su estado, también llega al panel de administración y se abre WhatsApp Web con el aviso para el kinesiólogo. Cuando el informe esté listo, podrás descargarlo en PDF.</p>
+        <button id="informe-request" class="mt-6 inline-flex rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white" type="button">Solicitar</button>
+        <div id="patient-informes" class="mt-8"></div>
+      </section>
+    </div>
+  </div>
+  <div id="cita-modal" class="login-modal" hidden>
+    <div class="login-modal-backdrop" data-close-cita></div>
+    <div class="login-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="cita-modal-title">
+      <button class="login-modal-close" type="button" data-close-cita aria-label="Cerrar">×</button>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Agendar</p>
+      <h2 id="cita-modal-title" class="mt-2 pr-10 font-serif text-3xl font-medium">Datos del paciente</h2>
+      <p id="cita-slot" class="mt-3 text-sm leading-relaxed text-muted"></p>
+      <p id="cita-alert" class="form-alert mt-4" hidden></p>
+      <form id="form-cita" class="mt-6 space-y-4" novalidate>
+        <div>
+          <label for="cita-nombre" class="mb-1.5 block text-sm font-medium text-bark">Nombre completo</label>
+          <input id="cita-nombre" name="nombre" class="field" type="text" autocomplete="name" maxlength="80" required>
+          <p class="field-error" data-error-for="cita-nombre"></p>
+        </div>
+        <div>
+          <label for="cita-edad" class="mb-1.5 block text-sm font-medium text-bark">Edad</label>
+          <input id="cita-edad" name="edad" class="field" type="number" inputmode="numeric" min="1" max="120" required>
+          <p class="field-error" data-error-for="cita-edad"></p>
+        </div>
+        <div>
+          <label for="cita-direccion" class="mb-1.5 block text-sm font-medium text-bark">Dirección</label>
+          <input id="cita-direccion" name="direccion" class="field" type="text" autocomplete="street-address" maxlength="160" required>
+          <p class="field-error" data-error-for="cita-direccion"></p>
+        </div>
+        <div>
+          <label for="cita-patologia" class="mb-1.5 block text-sm font-medium text-bark">Patología</label>
+          <textarea id="cita-patologia" name="patologia" class="field" rows="3" maxlength="240" required></textarea>
+          <p class="field-error" data-error-for="cita-patologia"></p>
+        </div>
+        <button class="inline-flex w-full items-center justify-center rounded-full bg-terracotta-deep px-6 py-3 text-sm font-semibold text-white transition hover:bg-ink" type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/informe-pdf.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/paciente.js"></script>
+</body>
+</html>

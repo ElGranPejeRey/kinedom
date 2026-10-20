@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#9C4E24">
+  <title>Nueva contraseña | KineDom</title>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="js/tailwind.js"></script>
+  <script src="js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-cream font-sans text-ink antialiased">
+  <main id="contenido" class="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Acceso</p>
+    <h1 class="mt-2 font-serif text-4xl font-medium">Nueva contraseña</h1>
+    <p class="mt-3 text-sm leading-relaxed text-muted">Elige la clave con la que vas a entrar a tu cuenta.</p>
+    <p id="nueva-alert" class="form-alert mt-4" hidden></p>
+    <form id="form-nueva-clave" class="mt-6 space-y-4" novalidate>
+      <div>
+        <label for="nueva-password" class="mb-1.5 block text-sm font-medium text-bark">Nueva contraseña</label>
+        <div class="field-wrap">
+          <input id="nueva-password" name="password" class="field has-toggle" type="password" autocomplete="new-password" minlength="8" required>
+          <button class="ghost-btn" type="button" data-toggle-password="nueva-password" aria-label="Mostrar contraseña">Ver</button>
+        </div>
+        <p class="field-error" data-error-for="nueva-password"></p>
+      </div>
+      <div>
+        <label for="nueva-password2" class="mb-1.5 block text-sm font-medium text-bark">Confirmar contraseña</label>
+        <div class="field-wrap">
+          <input id="nueva-password2" name="password2" class="field has-toggle" type="password" autocomplete="new-password" minlength="8" required>
+          <button class="ghost-btn" type="button" data-toggle-password="nueva-password2" aria-label="Mostrar confirmación">Ver</button>
+        </div>
+        <p class="field-error" data-error-for="nueva-password2"></p>
+      </div>
+      <button class="inline-flex w-full items-center justify-center rounded-full bg-terracotta-deep px-6 py-3 text-sm font-semibold text-white" type="submit">Guardar contraseña</button>
+    </form>
+    <div id="nueva-ok" class="mt-6 rounded-2xl bg-sand p-5" hidden>
+      <h2 class="font-serif text-2xl">Contraseña actualizada</h2>
+      <p class="mt-2 text-sm text-bark">Ya puedes entrar con la nueva clave.</p>
+      <a href="login.html" class="mt-4 inline-flex rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white">Ir al login</a>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/forms.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Panel | KineDom</title>
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="js/tailwind.js"></script>
+  <script src="js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-cream font-sans text-ink antialiased">
+  <main id="dash-gate" class="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16" hidden>
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Panel</p>
+    <h1 class="mt-3 font-serif text-4xl font-medium">Entra como administrador</h1>
+    <p class="mt-4 text-sm leading-relaxed text-muted">Este panel solo está disponible con la sesión de administrador.</p>
+    <a href="index.html" class="mt-6 inline-flex w-fit rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white">Volver al sitio</a>
+  </main>
+
+  <div id="dash-app" class="dash-shell" hidden>
+    <aside class="dash-side">
+      <a href="index.html" class="font-serif text-2xl text-cream">Kine<span class="text-clay">Dom</span></a>
+      <p id="dash-welcome" class="mt-3 text-sm leading-relaxed text-cream/80"></p>
+      <nav aria-label="Secciones del panel">
+        <button class="dash-tab is-active" type="button" data-panel="contenido">Contenido</button>
+        <button class="dash-tab" type="button" data-panel="personas">Personas</button>
+        <button class="dash-tab" type="button" data-panel="horas">Horas</button>
+        <button class="dash-tab" type="button" data-panel="citas">Citas</button>
+        <button class="dash-tab" type="button" data-panel="informes">Informes</button>
+        <button class="dash-tab" type="button" data-panel="cuenta">Cuenta</button>
+      </nav>
+      <div class="dash-side-foot">
+        <a href="index.html">Ver el sitio</a>
+        <button id="dash-logout" type="button">Cerrar sesión</button>
+      </div>
+    </aside>
+    <div class="dash-main">
+      <p id="dash-status" class="dash-status" hidden></p>
+
+      <section id="panel-contenido">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Sitio</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Contenido</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Edita los textos y las fotos de la página. Al guardar, los cambios quedan en la base de datos y se ven en el sitio.</p>
+        <form id="content-form" class="mt-6"></form>
+        <div class="dash-actions">
+          <button id="content-save" class="inline-flex rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white" type="button">Guardar contenido</button>
+          <button id="content-restore" class="inline-flex rounded-full border border-line bg-white px-5 py-3 text-sm font-semibold" type="button">Restaurar textos originales</button>
+        </div>
+      </section>
+
+      <section id="panel-personas" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Pacientes</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Personas registradas</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Estas cuentas están en la base de datos. Eliminar a una persona también borra sus horas y sus informes.</p>
+        <div id="user-list" class="mt-6"></div>
+      </section>
+
+      <section id="panel-horas" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Agenda</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Horas disponibles</h1>
+        <p id="hour-note" class="mt-3 max-w-2xl text-sm leading-relaxed text-muted"></p>
+        <div id="hour-editor" class="mt-6"></div>
+      </section>
+
+      <section id="panel-citas" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Agenda</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Citas agendadas</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Aquí aparecen las solicitudes de hora. Puedes confirmarlas o rechazarlas. Si rechazas una, esa hora vuelve a quedar disponible.</p>
+        <div id="cita-list" class="mt-6"></div>
+      </section>
+
+      <section id="panel-informes" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Pacientes</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Informes kinésicos</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Aquí llegan las solicitudes de informe que los pacientes envían desde su panel. En cada una puedes crear el informe y dejarlo firmado.</p>
+        <div id="informe-list" class="mt-6"></div>
+      </section>
+
+      <section id="panel-cuenta" hidden>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Acceso</p>
+        <h1 class="mt-2 font-serif text-4xl font-medium">Nombre de usuario</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted">Este nombre aparece en el mensaje de bienvenida cuando entras como administrador.</p>
+        <form id="account-form" class="mt-6 max-w-md space-y-4" novalidate>
+          <div>
+            <label for="admin-name" class="mb-1.5 block text-sm font-medium text-bark">Nombre de usuario</label>
+            <input id="admin-name" class="field" type="text" maxlength="60" required>
+          </div>
+          <button class="inline-flex rounded-full bg-terracotta-deep px-5 py-3 text-sm font-semibold text-white" type="submit">Guardar nombre</button>
+        </form>
+      </section>
+    </div>
+  </div>
+  <div id="informe-modal" class="login-modal" hidden>
+    <div class="login-modal-backdrop" data-close-informe></div>
+    <div class="login-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="informe-modal-title">
+      <button class="login-modal-close" type="button" data-close-informe aria-label="Cerrar">×</button>
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-terracotta-deep">Informe</p>
+      <h2 id="informe-modal-title" class="mt-2 pr-10 font-serif text-3xl font-medium">Crear informe</h2>
+      <p id="informe-patient" class="mt-3 text-sm leading-relaxed text-muted"></p>
+      <div class="mt-5 flex flex-wrap gap-2">
+        <button id="informe-write" class="dash-solid" type="button">Escribir informe</button>
+        <button id="informe-ai" class="dash-solid is-soft" type="button">Solicitar con IA</button>
+      </div>
+      <p id="informe-help" class="mt-3 text-sm leading-relaxed text-muted">Escribe el informe. La firma de Erick Barrios, kinesiólogo, queda al final.</p>
+      <p id="informe-alert" class="form-alert mt-4" hidden></p>
+      <div id="informe-ai-panel" class="mt-4 space-y-4" hidden>
+        <div>
+          <label for="ai-motivo" class="mb-1.5 block text-sm font-medium text-bark">Motivo de consulta</label>
+          <textarea id="ai-motivo" class="field" rows="2" maxlength="400"></textarea>
+        </div>
+        <div>
+          <label for="ai-antecedentes" class="mb-1.5 block text-sm font-medium text-bark">Antecedentes relevantes</label>
+          <textarea id="ai-antecedentes" class="field" rows="3" maxlength="800"></textarea>
+        </div>
+        <div>
+          <label for="ai-evaluacion" class="mb-1.5 block text-sm font-medium text-bark">Evaluación</label>
+          <textarea id="ai-evaluacion" class="field" rows="3" maxlength="800" placeholder="Dolor, movilidad, fuerza y función"></textarea>
+        </div>
+        <div>
+          <label for="ai-plan" class="mb-1.5 block text-sm font-medium text-bark">Plan e indicaciones</label>
+          <textarea id="ai-plan" class="field" rows="3" maxlength="800"></textarea>
+        </div>
+        <button id="informe-generate" class="inline-flex w-full items-center justify-center rounded-full bg-terracotta-deep px-6 py-3 text-sm font-semibold text-white" type="button">Generar informe con la IA</button>
+      </div>
+      <form id="form-informe" class="mt-4" novalidate>
+        <div id="informe-write-panel">
+          <label for="informe-texto" class="mb-1.5 block text-sm font-medium text-bark">Informe</label>
+          <textarea id="informe-texto" class="field informe-editor" rows="12" maxlength="8000" required></textarea>
+          <div class="informe-sign" aria-label="Firma virtual">
+            <p class="informe-sign-name">Erick Barrios</p>
+            <p class="informe-sign-role">Kinesiólogo</p>
+          </div>
+          <div id="informe-share" class="mt-4 flex flex-wrap gap-2" hidden>
+            <button id="informe-download" class="dash-solid" type="button">Descargar</button>
+            <button id="informe-gmail" class="dash-solid is-soft" type="button">Enviar por Gmail</button>
+          </div>
+          <button class="mt-5 inline-flex w-full items-center justify-center rounded-full bg-terracotta-deep px-6 py-3 text-sm font-semibold text-white" type="submit">Guardar informe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/content.js"></script>
+  <script src="js/informe-pdf.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
