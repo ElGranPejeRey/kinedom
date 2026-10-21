@@ -3,6 +3,10 @@
   if (!root || !window.KineDom) return;
 
   const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  const MODES = [
+    { value: "Domicilio", label: "A domicilio", icon: "home" },
+    { value: "Telemedicina", label: "Videoconsulta", icon: "video" },
+  ];
   const MONTHS = [
     "enero",
     "febrero",
@@ -84,18 +88,42 @@
     return applyReservations(scheduleAvailability(viewYear, viewMonth));
   }
 
-  function isPublished() {
-    const schedule = KineDom.getSchedule ? KineDom.getSchedule() : null;
-    return Boolean(schedule && schedule.published);
-  }
-
   function longDate(value) {
     const [year, month, day] = value.split("-").map(Number);
-    return new Intl.DateTimeFormat("es-CL", {
+    const formatted = new Intl.DateTimeFormat("es-CL", {
       weekday: "long",
       day: "numeric",
       month: "long",
     }).format(new Date(year, month - 1, day));
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  }
+
+  function modeLabel(value) {
+    const mode = MODES.find((item) => item.value === value);
+    return mode ? mode.label : "A domicilio";
+  }
+
+  function icon(name) {
+    const paths = {
+      home: '<path d="M4 11.2 12 5l8 6.2V20a1 1 0 0 1-1 1h-5.2v-6.2H10.2V21H5a1 1 0 0 1-1-1z"></path>',
+      video: '<rect x="3" y="6.5" width="11" height="11" rx="2"></rect><path d="M14 10.2 21 7v10l-7-3.2z"></path>',
+      clock: '<circle cx="12" cy="12" r="8"></circle><path d="M12 8.2V12l2.8 1.8"></path>',
+      timer: '<path d="M9 3h6M12 7v1"></path><circle cx="12" cy="14" r="6.5"></circle><path d="M12 14V11"></path>',
+      tag: '<path d="M20 13.2 12.2 21 3 11.8V4h7.8z"></path><circle cx="8.2" cy="8.2" r="1.1"></circle>',
+      calendar: '<rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M8 3.5v4M16 3.5v4M4 10h16"></path>',
+    };
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("width", "18");
+    svg.setAttribute("height", "18");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = paths[name] || "";
+    return svg;
   }
 
   function el(tag, className, text) {
@@ -137,38 +165,59 @@
     });
   }
 
+  function summaryItem(iconName, label, value) {
+    const item = el("div", "book-summary-item");
+    item.append(icon(iconName));
+    item.append(el("strong", "", label));
+    item.append(el("span", "", value));
+    return item;
+  }
+
   function fillPanel(panel, data) {
+    panel.className = "book-detail";
     if (!selectedDate) {
-      panel.append(el("p", "cal-hint", "Selecciona un día marcado para ver las horas."));
+      panel.append(el("p", "cal-hint", "Toca un día en amarillo para ver los horarios."));
       return;
     }
     const info = data[selectedDate] || { available: [], booked: [] };
-    panel.append(el("h4", "cal-panel-title", longDate(selectedDate)));
+    panel.append(el("h3", "book-date", longDate(selectedDate)));
     if (!info.available.length && !info.booked.length) {
       panel.append(el("p", "cal-hint", "Este día no tiene horas publicadas."));
       return;
     }
 
-    const modes = el("div", "cal-modes");
-    ["Domicilio", "Telemedicina"].forEach((mode) => {
-      const button = el("button", "cal-mode", mode);
+    const modes = el("div", "book-modes");
+    MODES.forEach((mode) => {
+      const button = el("button", "book-mode");
       button.type = "button";
-      const active = mode === modalidad;
+      button.append(icon(mode.icon), el("span", "", mode.label));
+      const active = mode.value === modalidad;
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", active ? "true" : "false");
       button.addEventListener("click", () => {
-        modalidad = mode;
+        modalidad = mode.value;
         render();
       });
       modes.append(button);
     });
     panel.append(modes);
 
-    const slots = el("div", "cal-slots");
+    const head = el("div", "book-hours-head");
+    const title = el("p", "book-hours-title");
+    title.append(icon("clock"), el("span", "", "Horarios disponibles"));
+    const meta = el("div", "book-meta");
+    const duration = el("span", "", "50 min");
+    duration.prepend(icon("timer"));
+    const price = el("span", "", "$25.000");
+    price.prepend(icon("tag"));
+    meta.append(duration, price);
+    head.append(title, meta);
+    panel.append(head);
+
+    const slots = el("div", "book-slots");
     [...info.available, ...info.booked].sort().forEach((hour) => {
       const booked = info.booked.includes(hour);
-      const published = isPublished();
-      const button = el("button", "cal-slot", booked || !published ? hour : `${hour} · Disponibilidad`);
+      const button = el("button", "book-slot", hour);
       button.type = "button";
       if (booked) {
         button.classList.add("is-booked");
@@ -176,13 +225,11 @@
         button.setAttribute("aria-label", `${hour} ocupada`);
       } else if (hour === selectedHour) {
         button.classList.add("is-selected");
-        if (published) button.classList.add("is-open");
         button.setAttribute("aria-pressed", "true");
-        button.setAttribute("aria-label", published ? `${hour}, disponibilidad` : `${hour} disponible`);
+        button.setAttribute("aria-label", `${hour} seleccionada`);
       } else {
-        if (published) button.classList.add("is-open");
         button.setAttribute("aria-pressed", "false");
-        button.setAttribute("aria-label", published ? `${hour}, disponibilidad` : `${hour} disponible`);
+        button.setAttribute("aria-label", `${hour} disponible`);
       }
       button.addEventListener("click", () => {
         selectedHour = hour;
@@ -192,13 +239,21 @@
     });
     panel.append(slots);
 
-    const agendaMode = root.dataset.mode === "agenda";
-    const action = el(
-      "button",
-      "cal-book",
-      !selectedHour ? "Elige una hora" : agendaMode ? "Agendar" : `Reservar ${selectedHour} · ${modalidad}`
+    const summary = el("div", "book-summary");
+    summary.append(
+      summaryItem("calendar", "Fecha", longDate(selectedDate)),
+      summaryItem("clock", "Horario", selectedHour || "Elige una"),
+      summaryItem(modalidad === "Telemedicina" ? "video" : "home", "Modalidad", modeLabel(modalidad))
     );
+    panel.append(summary);
+
+    const action = el("button", "book-go");
     action.type = "button";
+    action.append(el("span", "", "Continuar con la reserva"));
+    action.insertAdjacentHTML(
+      "beforeend",
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>'
+    );
     action.disabled = !selectedHour || !info.available.includes(selectedHour);
     action.addEventListener("click", book);
     panel.append(action);
@@ -221,22 +276,15 @@
     next.innerHTML =
       '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>';
 
+    const monthName = MONTHS[viewMonth].charAt(0).toUpperCase() + MONTHS[viewMonth].slice(1);
     const titleWrap = el("div", "cal-title-wrap");
-    titleWrap.append(el("h3", "cal-title", `${MONTHS[viewMonth]} ${viewYear}`));
-    const todayButton = el("button", "cal-today", "Hoy");
-    todayButton.type = "button";
-    titleWrap.append(todayButton);
+    titleWrap.append(el("h3", "cal-title", `${monthName} ${viewYear}`));
 
     const current = new Date(viewYear, viewMonth, 1);
     prev.disabled = current <= minMonth;
     next.disabled = current >= maxMonth;
     prev.addEventListener("click", () => shiftMonth(-1));
     next.addEventListener("click", () => shiftMonth(1));
-    todayButton.addEventListener("click", () => {
-      viewYear = today.getFullYear();
-      viewMonth = today.getMonth();
-      render();
-    });
     head.append(prev, titleWrap, next);
 
     const grid = el("div", "cal-grid");
@@ -261,17 +309,13 @@
       const info = data[key];
       const past = date < today;
       const openHours = info && info.available.length ? info.available : [];
-      const publishedOpen = isPublished() && openHours.length;
       const button = el("button", "cal-day");
       button.type = "button";
       button.append(el("span", "cal-day-num", String(day)));
-      if (publishedOpen) {
-        button.append(el("span", "cal-open-label", "Disponibilidad"));
-      }
-      if (date.getTime() === today.getTime()) button.classList.add("is-today");
+      const fullyBooked = info && info.booked.length && !openHours.length;
       if (key === selectedDate) button.classList.add("is-selected");
-      if (openHours.length) button.classList.add("has-slots");
-      if (publishedOpen) button.classList.add("is-open");
+      else if (openHours.length) button.classList.add("is-free");
+      else if (fullyBooked) button.classList.add("is-busy");
       if (past) button.classList.add("is-disabled");
       button.disabled = past;
       const spoken = new Intl.DateTimeFormat("es-CL", {
@@ -281,11 +325,11 @@
       }).format(date);
       button.setAttribute(
         "aria-label",
-        publishedOpen
-          ? `${spoken}, disponibilidad a las ${openHours.join(" y ")}`
-          : openHours.length
-            ? `${spoken}, con horas disponibles`
-            : `${spoken}, sin horas disponibles`
+        openHours.length
+          ? `${spoken}, disponible a las ${openHours.join(" y ")}`
+          : info && info.booked.length
+            ? `${spoken}, ocupado`
+            : `${spoken}, sin horas`
       );
       button.setAttribute("aria-pressed", key === selectedDate ? "true" : "false");
       button.addEventListener("click", () => {
@@ -298,7 +342,7 @@
 
     const legend = el("div", "cal-legend");
     [
-      [isPublished() ? "is-open-mark" : "is-free", isPublished() ? "Disponibilidad" : "Disponible"],
+      ["is-free", "Disponible"],
       ["is-busy", "Ocupada"],
       ["is-pick", "Seleccionada"],
     ].forEach(([kind, label]) => {
@@ -307,11 +351,11 @@
       legend.append(item);
     });
 
-    const panel = el("div", "cal-panel");
+    const panel = el("div", "book-detail");
     panel.setAttribute("aria-live", "polite");
     fillPanel(panel, data);
-    card.append(head, grid, legend, panel);
-    root.append(card);
+    card.append(head, grid, legend);
+    root.append(card, panel);
     renderMine();
 
     if (pendingMessage) {
@@ -348,6 +392,7 @@
             fecha: selectedDate,
             hora: selectedHour,
             modalidad,
+            modalidadLabel: modeLabel(modalidad),
             etiqueta: longDate(selectedDate),
           },
         })
@@ -388,7 +433,7 @@
     selectedHour = null;
     pendingMessage = {
       kind: "is-ok",
-      text: `Solicitud enviada: ${when} a las ${hour}, en modalidad ${mode}. El estado es Pendiente y se abrió WhatsApp para avisar al kinesiólogo.`,
+      text: `Solicitud enviada: ${when} a las ${hour}, ${modeLabel(mode)}. El estado es Pendiente y se abrió WhatsApp para avisar al kinesiólogo.`,
     };
     render();
   }
@@ -397,7 +442,11 @@
   boot.then(() => {
     const initial = getData();
     const todayKey = iso(today);
+    const firstOpen = Object.keys(initial)
+      .filter((key) => initial[key].available.length)
+      .sort()[0];
     if (initial[todayKey] && initial[todayKey].available.length) selectedDate = todayKey;
+    else if (firstOpen) selectedDate = firstOpen;
     render();
   });
 

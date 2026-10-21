@@ -23,17 +23,55 @@ exception when others then
 end;
 $$;
 
+create or replace function public.safe_date(value text)
+returns date
+language plpgsql
+immutable
+as $$
+begin
+  if value is null or value !~ '^\d{4}-\d{2}-\d{2}$' then
+    return null;
+  end if;
+  return value::date;
+exception when others then
+  return null;
+end;
+$$;
+
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text not null unique,
   nombre text not null,
   edad integer,
+  fecha_nacimiento date,
   direccion text,
+  tipo_vivienda text,
+  numero text,
+  comuna text,
+  torre text,
   codigo text,
   celular text,
   role text not null default 'patient' check (role in ('patient', 'admin')),
   created_at timestamptz not null default now()
 );
+
+alter table public.profiles add column if not exists fecha_nacimiento date;
+alter table public.profiles add column if not exists tipo_vivienda text;
+alter table public.profiles add column if not exists numero text;
+alter table public.profiles add column if not exists comuna text;
+alter table public.profiles add column if not exists torre text;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'profiles_tipo_vivienda_check' and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+      add constraint profiles_tipo_vivienda_check
+      check (tipo_vivienda is null or tipo_vivienda in ('casa', 'departamento'));
+  end if;
+end $$;
 
 create table if not exists public.site_content (
   id integer primary key default 1 check (id = 1),
@@ -147,13 +185,25 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, email, nombre, edad, direccion, codigo, celular, role)
+  insert into public.profiles (
+    id, email, nombre, edad, fecha_nacimiento, direccion,
+    tipo_vivienda, numero, comuna, torre, codigo, celular, role
+  )
   values (
     new.id,
     lower(new.email),
     coalesce(nullif(trim(new.raw_user_meta_data->>'nombre'), ''), split_part(new.email, '@', 1)),
     public.safe_int(new.raw_user_meta_data->>'edad'),
+    public.safe_date(new.raw_user_meta_data->>'fecha_nacimiento'),
     nullif(trim(new.raw_user_meta_data->>'direccion'), ''),
+    case
+      when new.raw_user_meta_data->>'tipo_vivienda' in ('casa', 'departamento')
+      then new.raw_user_meta_data->>'tipo_vivienda'
+      else null
+    end,
+    nullif(trim(new.raw_user_meta_data->>'numero'), ''),
+    nullif(trim(new.raw_user_meta_data->>'comuna'), ''),
+    nullif(trim(new.raw_user_meta_data->>'torre'), ''),
     nullif(trim(new.raw_user_meta_data->>'codigo'), ''),
     nullif(regexp_replace(coalesce(new.raw_user_meta_data->>'celular', ''), '\D', '', 'g'), ''),
     'patient'

@@ -354,8 +354,10 @@ textarea.field { min-height: 96px; resize: vertical; line-height: 1.45; }
 .mode { display: flex; gap: 8px; margin: 14px 0; }
 .mode .btn { flex: 1; }
 .sign { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
-.sign b { display: block; font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 560; }
-.sign span { color: var(--muted); font-size: 13px; }
+.sign b,
+.sign span { display: block; }
+.sign b { font-family: Fraunces, Georgia, serif; font-size: 22px; font-weight: 560; }
+.sign span { color: var(--muted); font-size: 15px; line-height: 1.45; }
 .informe-body {
   white-space: pre-wrap;
   color: var(--bark);

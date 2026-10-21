@@ -47,7 +47,12 @@ var KineDom = (() => {
       email: normalizeEmail(row.email),
       nombre: row.nombre || "",
       edad: row.edad,
+      fechaNacimiento: row.fecha_nacimiento || "",
       direccion: row.direccion || "",
+      tipoVivienda: row.tipo_vivienda || "",
+      numero: row.numero || "",
+      comuna: row.comuna || "",
+      torre: row.torre || "",
       codigo: row.codigo || "",
       celular: row.celular || "",
       role: row.role === "admin" ? "admin" : "patient",
@@ -245,7 +250,12 @@ var KineDom = (() => {
         data: {
           nombre,
           edad: String(user.edad),
+          fecha_nacimiento: user.fechaNacimiento || "",
           direccion: user.direccion.trim(),
+          tipo_vivienda: user.tipoVivienda || "",
+          numero: String(user.numero || "").trim(),
+          comuna: String(user.comuna || "").trim(),
+          torre: String(user.torre || "").trim(),
           codigo: user.codigo,
           celular: String(user.celular).replace(/\D/g, ""),
         },
@@ -254,6 +264,24 @@ var KineDom = (() => {
     if (error) return { ok: false, error: dbError(error, "No se pudo crear la cuenta.") };
     if (!data.session) {
       return { ok: false, error: "Revisa tu correo para confirmar la cuenta. Después podrás entrar al panel." };
+    }
+    if (data.user) {
+      const extra = {
+        edad: Number(user.edad),
+        fecha_nacimiento: user.fechaNacimiento || null,
+        direccion: user.direccion.trim(),
+        tipo_vivienda: user.tipoVivienda || null,
+        numero: String(user.numero || "").trim(),
+        comuna: String(user.comuna || "").trim(),
+        torre: String(user.torre || "").trim() || null,
+      };
+      const updated = await db.from("profiles").update(extra).eq("id", data.user.id);
+      if (updated.error && /column|schema cache|fecha_nacimiento|tipo_vivienda/i.test(`${updated.error.message || ""} ${updated.error.code || ""}`)) {
+        await db.from("profiles").update({
+          edad: extra.edad,
+          direccion: extra.direccion,
+        }).eq("id", data.user.id);
+      }
     }
     await applyAuthSession(data.session);
     await loadUsers();
@@ -458,7 +486,12 @@ var KineDom = (() => {
       id: user.id,
       nombre: user.nombre,
       edad: user.edad,
+      fechaNacimiento: user.fechaNacimiento || "",
       direccion: user.direccion,
+      tipoVivienda: user.tipoVivienda || "",
+      numero: user.numero || "",
+      comuna: user.comuna || "",
+      torre: user.torre || "",
       codigo: user.codigo,
       celular: user.celular,
       email: user.email,

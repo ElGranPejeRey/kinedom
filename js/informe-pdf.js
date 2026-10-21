@@ -111,8 +111,12 @@ function reportPdf(item) {
     });
   });
   blocks.push({ kind: "gap", h: 22 }, { kind: "rule" }, { kind: "gap", h: 16 });
-  blocks.push({ kind: "text", text: "Erick Barrios", font: "F3", size: 16, leading: 22, color: ink });
-  blocks.push({ kind: "text", text: "Kinesiólogo", font: "F1", size: 9, leading: 14, color: muted });
+  wrapPdfLine("Erick Rodrigo Barrios Arias", 16, maxW).forEach((line) => {
+    blocks.push({ kind: "text", text: line, font: "F3", size: 16, leading: 22, color: ink });
+  });
+  ["17.202.257-k", "kinesiólogo", "RSS: 664849"].forEach((line) => {
+    blocks.push({ kind: "text", text: line, font: "F1", size: 11, leading: 16, color: muted });
+  });
 
   const pages = [];
   let current = [];

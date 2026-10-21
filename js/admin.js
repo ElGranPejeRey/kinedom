@@ -176,10 +176,19 @@
       mail.textContent = user.email;
       const phone = document.createElement("p");
       phone.className = "text-sm text-muted";
-      phone.textContent = `${user.codigo} ${user.celular} · ${user.edad} años`;
+      const years = user.edad || user.edad === 0 ? `${user.edad} años` : "edad no indicada";
+      const born = /^\d{4}-\d{2}-\d{2}$/.test(user.fechaNacimiento || "")
+        ? new Date(
+            Number(user.fechaNacimiento.slice(0, 4)),
+            Number(user.fechaNacimiento.slice(5, 7)) - 1,
+            Number(user.fechaNacimiento.slice(8, 10))
+          ).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })
+        : "";
+      phone.textContent = `${user.codigo} ${user.celular} · ${years}${born ? ` · ${born}` : ""}`;
       const address = document.createElement("p");
       address.className = "text-sm text-muted";
-      address.textContent = user.direccion;
+      const home = user.tipoVivienda === "departamento" ? "Departamento" : user.tipoVivienda === "casa" ? "Casa" : "";
+      address.textContent = home ? `${home} · ${user.direccion}` : user.direccion;
       const count = reservas.filter((item) => item.email === user.email).length;
       const bookings = document.createElement("p");
       bookings.className = "text-sm text-bark";
@@ -379,11 +388,14 @@
         sign.className = "informe-sign";
         const signName = document.createElement("p");
         signName.className = "informe-sign-name";
-        signName.textContent = "Erick Barrios";
-        const signRole = document.createElement("p");
-        signRole.className = "informe-sign-role";
-        signRole.textContent = "Kinesiólogo";
-        sign.append(signName, signRole);
+        signName.textContent = "Erick Rodrigo Barrios Arias";
+        ["17.202.257-k", "kinesiólogo", "RSS: 664849"].forEach((text) => {
+          const line = document.createElement("p");
+          line.className = "informe-sign-role";
+          line.textContent = text;
+          sign.append(line);
+        });
+        sign.prepend(signName);
         card.append(body, sign);
       }
       card.append(actions);
@@ -409,7 +421,7 @@
     const fileName = KineDomPdf.fileName(item.nombre);
     downloadInforme(item);
     const subject = `Informe kinésico de ${item.nombre}`;
-    const body = `Te envío el informe kinésico de ${item.nombre}.\nAdjunta el PDF descargado: ${fileName}\n\nErick Barrios\nKinesiólogo`;
+    const body = `Te envío el informe kinésico de ${item.nombre}.\nAdjunta el PDF descargado: ${fileName}\n\nErick Rodrigo Barrios Arias\n17.202.257-k\nkinesiólogo\nRSS: 664849`;
     const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(item.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const link = document.createElement("a");
     link.href = url;
@@ -438,7 +450,14 @@
 
   function draftInforme(item, answers) {
     const { user, citas } = informeContext(item);
-    const edad = user && user.edad ? `${user.edad} años` : "edad no registrada en la ficha";
+    const edad = user && (user.edad || user.edad === 0) ? `${user.edad} años` : "edad no registrada en la ficha";
+    const nacimiento = user && /^\d{4}-\d{2}-\d{2}$/.test(user.fechaNacimiento || "")
+      ? new Date(
+          Number(user.fechaNacimiento.slice(0, 4)),
+          Number(user.fechaNacimiento.slice(5, 7)) - 1,
+          Number(user.fechaNacimiento.slice(8, 10))
+        ).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })
+      : "";
     const direccion = user && user.direccion ? user.direccion : "dirección no registrada en la ficha";
     const atenciones = citas.length
       ? citas
@@ -460,6 +479,7 @@
       "",
       `Paciente: ${item.nombre}`,
       `Edad: ${edad}`,
+      ...(nacimiento ? [`Fecha de nacimiento: ${nacimiento}`] : []),
       `Dirección: ${direccion}`,
       `Correo: ${item.email}`,
       "",
@@ -496,7 +516,7 @@
     document.getElementById("informe-write").classList.toggle("is-soft", ai);
     document.getElementById("informe-help").textContent = ai
       ? "Completa la información clínica y después pulsa Generar informe con la IA."
-      : "Escribe el informe. La firma de Erick Barrios, kinesiólogo, queda al final.";
+      : "Escribe el informe. La firma de Erick Rodrigo Barrios Arias, kinesiólogo, queda al final.";
     showInformeAlert("");
     refreshReportActions();
   }
@@ -613,7 +633,7 @@
     }
     closeInforme();
     renderInformes();
-    showStatus("Informe guardado, con la firma de Erick Barrios, kinesiólogo.");
+    showStatus("Informe guardado, con la firma de Erick Rodrigo Barrios Arias, kinesiólogo.");
   });
 
   document.addEventListener("kinedom-sync", () => {

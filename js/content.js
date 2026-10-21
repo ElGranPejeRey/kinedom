@@ -68,14 +68,13 @@ var KineDomContent = (() => {
     },
     agenda: {
       eyebrow: "Agenda",
-      title: "Horas disponibles",
-      intro:
-        "Elige el día y si prefieres domicilio o telemedicina. Cada día puede tener dos horas, 18:00 y 19:00, marcadas como disponibilidad.",
+      title: "Reserva tu atención",
+      intro: "Selecciona fecha, modalidad y horario.",
       asideTitle: "Cómo reservar",
-      step1: "Elige un día marcado en amarillo, con la palabra disponibilidad.",
-      step2: "Selecciona domicilio o telemedicina y una hora libre.",
-      step3: "Crea tu cuenta o entra si ya estás registrado.",
-      note: "Las horas en amarillo son las que el kinesiólogo publicó. Al agendar, la cita queda guardada en la base de datos.",
+      step1: "Toca un día amarillo. Ese día tiene una hora libre.",
+      step2: "Elige a domicilio o videoconsulta, y después la hora.",
+      step3: "Revisa el resumen y continúa con la reserva.",
+      note: "La hora amarilla es la que vas a solicitar. Queda pendiente hasta que se confirme.",
       cta: "Crear cuenta",
     },
     nav: {
@@ -97,11 +96,11 @@ var KineDomContent = (() => {
       eyebrow: "Ayuda",
       title: "Preguntas frecuentes",
       q1: "¿Cómo agendo una hora de kinesiología?",
-      a1: "En Horas disponibles elige un día marcado como disponibilidad, la modalidad de domicilio o telemedicina y una hora libre. Si aún no tienes cuenta, regístrate. La solicitud queda pendiente hasta que el kinesiólogo la confirme o la rechace.",
+      a1: "En Reserva tu atención elige un día amarillo, la modalidad a domicilio o videoconsulta y una hora libre. Si aún no tienes cuenta, regístrate. La solicitud queda pendiente hasta que el kinesiólogo la confirme o la rechace.",
       q2: "¿La atención es en mi casa o por telemedicina?",
       a2: "Puedes elegir las dos. La atención domiciliaria se hace en tu casa. La telemedicina es una videollamada para revisar ejercicios, dolor y avances sin que tengas que trasladarte.",
       q3: "¿Qué horarios se pueden reservar?",
-      a3: "Cada día publicado puede ofrecer dos horas: 18:00 y 19:00. En el calendario aparecen en amarillo, con la palabra disponibilidad.",
+      a3: "Cada día publicado puede ofrecer dos horas: 18:00 y 19:00. En el calendario esos días se ven en amarillo.",
       q4: "¿Cómo contacto a KineDom?",
       a4: "Puedes escribir por WhatsApp al +56 9 4130 3571 o al correo erickbarriosarias30@gmail.com.",
     },
@@ -326,6 +325,41 @@ var KineDomContent = (() => {
       if (stored.footer.whatsapp === "+56 9 0000 0000") stored.footer.whatsapp = defaults.footer.whatsapp;
       if (stored.footer.phone === "+56 9 0000 0000") stored.footer.phone = defaults.footer.phone;
       if (stored.footer.email === "contacto@kinedom.cl") stored.footer.email = defaults.footer.email;
+    }
+    if (stored.agenda) {
+      if (stored.agenda.title === "Horas disponibles") stored.agenda.title = defaults.agenda.title;
+      if (
+        stored.agenda.intro ===
+        "Elige el día y si prefieres domicilio o telemedicina. Cada día puede tener dos horas, 18:00 y 19:00, marcadas como disponibilidad."
+      ) {
+        stored.agenda.intro = defaults.agenda.intro;
+      }
+      if (stored.agenda.step1 === "Elige un día marcado en amarillo, con la palabra disponibilidad.") {
+        stored.agenda.step1 = defaults.agenda.step1;
+      }
+      if (stored.agenda.step2 === "Selecciona domicilio o telemedicina y una hora libre.") {
+        stored.agenda.step2 = defaults.agenda.step2;
+      }
+      if (stored.agenda.step3 === "Crea tu cuenta o entra si ya estás registrado.") {
+        stored.agenda.step3 = defaults.agenda.step3;
+      }
+      if (stored.agenda.note === "Las horas en amarillo son las que el kinesiólogo publicó. Al agendar, la cita queda guardada en la base de datos.") {
+        stored.agenda.note = defaults.agenda.note;
+      }
+    }
+    if (stored.faq) {
+      if (
+        stored.faq.a1 ===
+        "En Horas disponibles elige un día marcado como disponibilidad, la modalidad de domicilio o telemedicina y una hora libre. Si aún no tienes cuenta, regístrate. La solicitud queda pendiente hasta que el kinesiólogo la confirme o la rechace."
+      ) {
+        stored.faq.a1 = defaults.faq.a1;
+      }
+      if (
+        stored.faq.a3 ===
+        "Cada día publicado puede ofrecer dos horas: 18:00 y 19:00. En el calendario aparecen en amarillo, con la palabra disponibilidad."
+      ) {
+        stored.faq.a3 = defaults.faq.a3;
+      }
     }
     finishReady();
     return get();

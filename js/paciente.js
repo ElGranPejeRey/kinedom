@@ -65,7 +65,7 @@
     citaForm.edad.value = profile.edad || "";
     citaForm.direccion.value = profile.direccion || "";
     citaForm.patologia.value = "";
-    citaSlot.textContent = `${detail.etiqueta} · ${detail.hora} · ${detail.modalidad}`;
+    citaSlot.textContent = `${detail.etiqueta} · ${detail.hora} · ${detail.modalidadLabel || detail.modalidad}`;
     citaFocus = document.activeElement;
     citaModal.hidden = false;
     document.body.classList.add("overflow-hidden");

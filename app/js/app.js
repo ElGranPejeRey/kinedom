@@ -158,7 +158,7 @@ var KineApp = (() => {
   }
 
   function signBlock() {
-    return `<div class="sign"><b>Erick Barrios</b><span>Kinesiólogo</span></div>`;
+    return `<div class="sign"><b>Erick Rodrigo Barrios Arias</b><span>17.202.257-k</span><span>kinesiólogo</span><span>RSS: 664849</span></div>`;
   }
 
   function informeCard(item) {
@@ -313,8 +313,8 @@ var KineApp = (() => {
       return `<article class="card">
         <h2>${esc(user.nombre)}</h2>
         <p class="bark">${esc(user.email)}</p>
-        <p class="muted">${esc(user.codigo || "")} ${esc(user.celular || "")}${user.edad ? ` · ${esc(user.edad)} años` : ""}</p>
-        <p class="muted">${esc(user.direccion || "")}</p>
+        <p class="muted">${esc(user.codigo || "")} ${esc(user.celular || "")}${user.edad || user.edad === 0 ? ` · ${esc(user.edad)} años` : ""}${user.fechaNacimiento ? ` · ${esc(user.fechaNacimiento.split("-").reverse().join("-"))}` : ""}</p>
+        <p class="muted">${user.tipoVivienda === "departamento" ? "Departamento · " : user.tipoVivienda === "casa" ? "Casa · " : ""}${esc(user.direccion || "")}</p>
         <p class="bark">${count === 1 ? "1 hora reservada" : `${count} horas reservadas`}</p>
         <div class="actions"><button class="btn danger" type="button" data-action="user-delete" data-email="${esc(user.email)}">Eliminar</button></div>
       </article>`;
@@ -415,7 +415,7 @@ var KineApp = (() => {
         <button class="btn${ai ? " soft" : ""}" type="button" data-action="informe-mode" data-mode="write">Escribir</button>
         <button class="btn${ai ? "" : " soft"}" type="button" data-action="informe-mode" data-mode="ai">Solicitar con IA</button>
       </div>
-      <p class="intro">${ai ? "Completa la información clínica y después pulsa Generar informe." : "Escribe el informe. La firma de Erick Barrios, kinesiólogo, queda al final."}</p>
+      <p class="intro">${ai ? "Completa la información clínica y después pulsa Generar informe." : "Escribe el informe. La firma de Erick Rodrigo Barrios Arias, kinesiólogo, queda al final."}</p>
       <p id="informe-alert" class="alert" ${ui.informeAlert ? "" : "hidden"}>${esc(ui.informeAlert)}</p>
       <div ${ai ? "" : "hidden"}>
         <div class="field-block"><label for="ai-motivo">Motivo de consulta</label><textarea id="ai-motivo" class="field" rows="2" maxlength="400">${esc(ui.ai.motivo)}</textarea></div>
@@ -515,7 +515,14 @@ var KineApp = (() => {
 
   function draftInforme(item, answers) {
     const { user, citas } = informeContext(item);
-    const edad = user && user.edad ? `${user.edad} años` : "edad no registrada en la ficha";
+    const edad = user && (user.edad || user.edad === 0) ? `${user.edad} años` : "edad no registrada en la ficha";
+    const nacimiento = user && /^\d{4}-\d{2}-\d{2}$/.test(user.fechaNacimiento || "")
+      ? new Date(
+          Number(user.fechaNacimiento.slice(0, 4)),
+          Number(user.fechaNacimiento.slice(5, 7)) - 1,
+          Number(user.fechaNacimiento.slice(8, 10))
+        ).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" })
+      : "";
     const direccion = user && user.direccion ? user.direccion : "dirección no registrada en la ficha";
     const atenciones = citas.length
       ? citas.map((cita) => `${formatDay(cita.fecha)} a las ${cita.hora}, en modalidad ${cita.modalidad || "domicilio"}`).join(". ")
@@ -525,6 +532,7 @@ var KineApp = (() => {
       "",
       `Paciente: ${item.nombre}`,
       `Edad: ${edad}`,
+      ...(nacimiento ? [`Fecha de nacimiento: ${nacimiento}`] : []),
       `Dirección: ${direccion}`,
       `Correo: ${item.email}`,
       "",
@@ -577,7 +585,7 @@ var KineApp = (() => {
 
   function mailInforme(item) {
     const subject = `Informe kinésico de ${item.nombre}`;
-    const body = `Te envío el informe kinésico de ${item.nombre}.\nAdjunta el PDF: ${KinePdf.fileName(item.nombre)}\n\nErick Barrios\nKinesiólogo`;
+    const body = `Te envío el informe kinésico de ${item.nombre}.\nAdjunta el PDF: ${KinePdf.fileName(item.nombre)}\n\nErick Rodrigo Barrios Arias\n17.202.257-k\nkinesiólogo\nRSS: 664849`;
     window.location.href = `mailto:${encodeURIComponent(item.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
@@ -765,7 +773,7 @@ var KineApp = (() => {
           return;
         }
         closeInforme();
-        toast("Informe guardado, con la firma de Erick Barrios, kinesiólogo.");
+        toast("Informe guardado, con la firma de Erick Rodrigo Barrios Arias, kinesiólogo.");
         paint();
       });
     }
