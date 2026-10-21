@@ -120,7 +120,10 @@ function reportPdf(item) {
 
   const pages = [];
   let current = [];
-  let y = pageH - margin;
+  const logo = window.KinePdfLogo;
+  const logoW = 126;
+  const logoH = logo ? logoW * logo.pxH / logo.pxW : 0;
+  let y = pageH - margin - (logo ? logoH + 14 : 0);
   blocks.forEach((block) => {
     const height = block.kind === "text" ? block.leading : block.kind === "rule" ? 10 : block.h;
     if (y - height < margin && current.length) {
@@ -146,24 +149,37 @@ function reportPdf(item) {
 
   const objects = [];
   objects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
-  const pageNums = streams.map((_, index) => 6 + index * 2);
+  const pageStart = logo ? 7 : 6;
+  const pageNums = streams.map((_, index) => pageStart + index * 2);
   objects[2] = `<< /Type /Pages /Kids [${pageNums.map((num) => `${num} 0 R`).join(" ")}] /Count ${streams.length} >>`;
   objects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
   objects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
   objects[5] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>";
+  if (logo) {
+    const image = `${logo.hex}>`;
+    const x = (pageW - 42 - logoW).toFixed(2);
+    const imageY = (pageH - 40 - logoH).toFixed(2);
+    streams[0] = `q\n${logoW} 0 0 ${logoH.toFixed(2)} ${x} ${imageY} cm\n/Im1 Do\nQ\n${streams[0]}`;
+    objects[6] = {
+      raw: `<< /Type /XObject /Subtype /Image /Width ${logo.pxW} /Height ${logo.pxH} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter [/ASCIIHexDecode /DCTDecode] /Length ${image.length} >>\nstream\n${image}\nendstream`,
+    };
+  }
   streams.forEach((stream, index) => {
-    const pageNum = 6 + index * 2;
-    objects[pageNum] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents ${pageNum + 1} 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> >>`;
+    const pageNum = pageStart + index * 2;
+    const imageRes = logo ? " /XObject << /Im1 6 0 R >>" : "";
+    objects[pageNum] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents ${pageNum + 1} 0 R /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >>${imageRes} >> >>`;
     objects[pageNum + 1] = { stream };
   });
 
   let pdf = "%PDF-1.4\n";
   const offsets = [0];
-  const maxObj = 5 + streams.length * 2;
+  const maxObj = (logo ? 6 : 5) + streams.length * 2;
   for (let index = 1; index <= maxObj; index += 1) {
     offsets[index] = pdf.length;
     const obj = objects[index];
-    pdf += obj && obj.stream != null
+    pdf += obj && obj.raw
+      ? `${index} 0 obj\n${obj.raw}\nendobj\n`
+      : obj && obj.stream != null
       ? `${index} 0 obj\n<< /Length ${obj.stream.length} >>\nstream\n${obj.stream}\nendstream\nendobj\n`
       : `${index} 0 obj\n${obj}\nendobj\n`;
   }

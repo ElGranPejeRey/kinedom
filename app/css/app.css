@@ -57,6 +57,7 @@ a { color: var(--deep); }
 .boot { align-items: center; text-align: center; gap: 12px; color: var(--muted); }
 
 .brand { display: flex; align-items: center; gap: 12px; }
+.site-logo { display: block; height: 52px; width: auto; }
 .logo {
   width: 52px;
   height: 52px;

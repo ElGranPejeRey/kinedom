@@ -383,7 +383,7 @@ var KineApp = (() => {
 
   function loginHtml() {
     return `<main class="login">
-      <div class="brand"><span class="logo">K</span><div><strong>KineDom</strong><span>Administrador</span></div></div>
+      <div class="brand"><img class="site-logo" src="../images/logotipo-kinedom.png" alt="KineDom" width="1100" height="280"><span>Administrador</span></div>
       <h1>Entra para gestionar tu consulta</h1>
       <p class="lead">Citas, horas, pacientes, informes y el contenido del sitio, desde el teléfono.</p>
       <form id="login-form" class="form">
@@ -441,7 +441,7 @@ var KineApp = (() => {
     const root = app();
     if (ui.booting) {
       root.className = "boot";
-      root.innerHTML = `<span class="logo">K</span><p>Abriendo el panel…</p>`;
+      root.innerHTML = `<img class="site-logo" src="../images/logotipo-kinedom.png" alt="KineDom" width="1100" height="280"><p>Abriendo el panel…</p>`;
       return;
     }
     if (!session()) {

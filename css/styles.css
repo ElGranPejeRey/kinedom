@@ -46,6 +46,33 @@ section[id],
   border-bottom: 1px solid transparent;
 }
 
+.site-logo-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.site-logo {
+  display: block;
+  height: 2.85rem;
+  width: auto;
+}
+
+.site-logo-link.is-on-dark {
+  background: #fbf6f0;
+  border-radius: 999px;
+  padding: 0.22rem 0.7rem 0.22rem 0.28rem;
+}
+
+.site-logo-link.is-on-dark .site-logo {
+  height: 2.15rem;
+}
+
+.dash-side .site-logo {
+  height: 2.35rem;
+  max-width: 100%;
+}
+
 .site-header.is-scrolled {
   border-bottom-color: rgba(231, 217, 204, 0.95);
   box-shadow: 0 12px 30px -24px rgba(36, 28, 22, 0.8);
